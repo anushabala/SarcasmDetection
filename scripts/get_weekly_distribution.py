@@ -41,4 +41,41 @@ def write_distribution(weekly_data_root, output):
 def write_ternary_distribution(weekly_data_root, output):
     pos_sent = ["excited", "happy", "grateful", "joy", "love", "loved", "lucky", "wonderful"]
     neg_sent = ["angry", "awful", "disappointed", "fear", "frustrated", "hate", "sad", "scared", "stressed"]
-write_distribution("../weekly_data_constrained/", "distribution.tsv")
+    if weekly_data_root[-1]!='/':
+        weekly_data_root = weekly_data_root + '/'
+
+    freqs = {"sarcasm":[], "pos":[], "neg":[]}
+    num_weeks = 0
+    for dirname in os.listdir(weekly_data_root):
+        num_weeks += 1
+        for filename in os.listdir(weekly_data_root+dirname):
+            hashtag = filename[filename.index('.')+1:]
+            read_file = open(weekly_data_root+dirname+'/'+filename)
+            length = len(read_file.readlines())
+
+            sent = "sarcasm"
+            if hashtag in pos_sent:
+                sent = "pos"
+            elif hashtag in neg_sent:
+                sent = "neg"
+            if len(freqs[sent])==num_weeks-1:
+                freqs[sent].append(0)
+            freqs[sent][num_weeks-1] += length
+            # print "%s: %d\t%s: %d" % (sent, freqs[sent][num_weeks-1], hashtag, length)
+            read_file.close()
+
+
+    out_file = open(output, 'w')
+    out_file.write('\t'.join(freqs.keys())+"\n")
+    # print '\t'.join(freqs.keys())+"\n"
+    for week in range(0, num_weeks):
+        line = ''
+        for n in freqs.keys():
+            line = line + str(freqs[n][week]) + '\t'
+        line = line.strip('\t')
+        out_file.write(line+"\n")
+        # print line
+    out_file.close()
+
+# write_distribution("../weekly_data_constrained/", "distribution.tsv")
+write_ternary_distribution("../weekly_data_constrained/", "t-distribution.tsv")
