@@ -24,11 +24,12 @@ import com.sarcasm.util.TextUtility;
 import com.cybozu.labs.langdetect.Detector;
 import com.cybozu.labs.langdetect.DetectorFactory;
 import com.cybozu.labs.langdetect.LangDetectException;
-import com.cybozu.labs.langdetect.Language;
+import org.apache.log4j.Logger;
 
 public class EnglishTwitterFilter 
 {
-	
+	private static Logger logger = Logger.getLogger(EnglishTwitterFilter.class);
+    private static String LANG_DETECTOR_PROFILE = "/Users/anushabala/Downloads/langdetect-03-03-2014/profiles";
 	private String [] hashtags = {"#sarcasm", "#sarcastic" , "#angry" , "#awful" , "#disappointed" ,
 			  "#excited", "#fear" ,"#frustrated", "#grateful", "#happy" ,"#hate",
 			  "#joy" , "#loved", "#love", "#lucky", "#sad", "#scared", "#stressed",
@@ -53,7 +54,7 @@ public class EnglishTwitterFilter
 		BufferedReader reader = null ;
 		BufferedWriter writer  = null ;
 		
-		DetectorFactory.loadProfile("./lib/langdetect-03-03-2014/profiles");
+		DetectorFactory.loadProfile(LANG_DETECTOR_PROFILE);
 		 
 		Detector langDetector = DetectorFactory.create();
 	      
@@ -220,15 +221,16 @@ public class EnglishTwitterFilter
 		
 		BufferedReader reader = null ;
 		BufferedWriter writer  = null ;
-		
-		DetectorFactory.loadProfile("./lib/langdetect-03-03-2014/profiles");
+
+		DetectorFactory.loadProfile(LANG_DETECTOR_PROFILE);
 		 
 		Detector langDetector = DetectorFactory.create();
 	      
 		for ( File file : files )
 		{
 			
-			if(file.getName().contains("Store") || file.getName().contains("new_tweet"))
+			if(file.getName().contains("Store") || file.getName().contains("new_tweet")
+                    || file.getName().contains(".date"))
 			{
 				continue ;
 			}
@@ -242,7 +244,7 @@ public class EnglishTwitterFilter
 				 ( path + "/" + file.getName()), "UTF-8" ) );
 		
 			 writer = new BufferedWriter ( new OutputStreamWriter ( new FileOutputStream
-				 ( path + "/" + file.getName() + ".07182014"), "UTF-8" ) );
+				 ( path + "/" + file.getName() + ".08012014"), "UTF-8" ) );
 		
 			//the tweets collected from the tweeter has the "hash" name 
 			 //in the file name. So just parse the name to extract the hashtag
@@ -270,13 +272,15 @@ public class EnglishTwitterFilter
 				line = line.toLowerCase() ;
 				
 				String features[] = line.split("\t") ;
-				
-				if(features.length < 2)
+
+				if(features.length < 4)
 				{
+                    logger.warn("Tweet not formatted properly");
 					continue ;
 				}
 				String id = features[0];
 				String tweet = features[3] ;
+                logger.info("Tweet is: "+tweet);
 			
 				//we need to filter this tweet
 				
@@ -295,6 +299,7 @@ public class EnglishTwitterFilter
 				boolean ret = TextUtility.checkHashPresence(tweet,hashes);
 				if (ret)
 				{
+                    logger.debug("Tweet has one of the hashes in: "+hashes);
 					continue ;
 				}
 				
@@ -379,9 +384,7 @@ public class EnglishTwitterFilter
 		}
 	}
 	
-	
-	
-	private void writeTheRemoved(List<String> removedList) 
+	private void writeTheRemoved(List<String> removedList)
 	{
 		// TODO Auto-generated method stub
 		for ( String remove : removedList )
@@ -423,7 +426,7 @@ public class EnglishTwitterFilter
 	public static void main(String[] args) throws IOException, LangDetectException 
 	{
 		// TODO Auto-generated method stub
-		String path = "./data/english/filtered/positive/select/" ;
+        String path = "/Users/anushabala/PycharmProjects/SarcasmDetection/weekly_data_constrained/temp" ;
 		
 		EnglishTwitterFilter twitterObj = new EnglishTwitterFilter() ;
 		
