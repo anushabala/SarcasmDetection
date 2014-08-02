@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.StrMatcher;
 import org.apache.commons.lang3.text.StrTokenizer;
 
 import com.sarcasm.util.TextUtility;
@@ -107,12 +108,13 @@ public class EnglishTwitterFilter
 				
 				String features[] = line.split("\t") ;
 				
-				if(features.length < 2)
+				if(features.length != 4)
 				{
+                    logger.debug("Not properly formatted: "+line);
 					continue ;
 				}
 				String id = features[0];
-				String tweet = features[1] ;
+				String tweet = features[3] ;
 			
 				//we need to filter this tweet
 				
@@ -130,7 +132,7 @@ public class EnglishTwitterFilter
 				//remove the word with hash
 				tweet = TextUtility.removeHashes(tweet,hashes);
 				StrTokenizer tokenizer = new StrTokenizer(tweet) ;
-				
+				tokenizer.setTrimmerMatcher(StrMatcher.quoteMatcher());
 				String[] words = tokenizer.getTokenArray() ;
 		
 				
@@ -139,6 +141,7 @@ public class EnglishTwitterFilter
 				if (url)
 				{
 					removedList.add(tweet);
+                    logger.debug("Tweet contains only URL and no other information: "+tweet);
 					continue ;
 				}
 				
@@ -146,6 +149,7 @@ public class EnglishTwitterFilter
 				Boolean numWords = TextUtility.checkHashPosition(words,hashes) ;
 				if ( numWords)
 				{
+                    logger.debug("Tweet contains hash a majority of hashes: "+tweet);
 					removedList.add(tweet);
 					continue ;
 				}
@@ -155,18 +159,21 @@ public class EnglishTwitterFilter
 				//final empty
 				if(RTRemoved.isEmpty())
 				{
+                    logger.debug("Tweet is meaningless: "+tweet);
 					continue ;
 				}
 		
 				//only url and touser? - then remove the tweet
 				if(!(TextUtility.checkURLUser(words)))
 				{
+                    logger.debug("Tweet contains only RT and URL: "+tweet);
 					removedList.add(tweet);
 					continue ;
 				}
 				
 				if(uniqList.contains(RTRemoved))
 				{
+                    logger.debug("Tweet is duplicated: "+tweet);
 					continue ;
 				}
 				else
@@ -177,6 +184,7 @@ public class EnglishTwitterFilter
 				//we need at least some characters! (this is true/false)
 				if(!TextUtility.checkAlphaNumeric(RTRemoved))
 				{
+                    logger.debug("Tweet contains non-alphanumeric characters: "+tweet);
 					removedList.add(tweet);
 					continue ;
 				}
@@ -185,6 +193,7 @@ public class EnglishTwitterFilter
 				//can delete any tweet from training < 3 words
 				if(RTRemoved.split("\\s++").length <2)
 				{
+                    logger.debug("Tweet has fewer than 3 words.");
 					removedList.add(tweet);
 					continue ;
 				}
@@ -299,7 +308,7 @@ public class EnglishTwitterFilter
 				boolean ret = TextUtility.checkHashPresence(tweet,hashes);
 				if (ret)
 				{
-                    logger.debug("Tweet has one of the hashes in: "+hashes);
+//                    logger.debug("Tweet has one of the hashes in: "+hashes);
 					continue ;
 				}
 				
@@ -307,7 +316,7 @@ public class EnglishTwitterFilter
 				
 				String[] words = tokenizer.getTokenArray() ;
 		
-				
+				logger.debug("Something else wrong with tweet");
 				//URL filter
 				Boolean url = TextUtility.checkURL(words) ;
 				if (url)
@@ -430,9 +439,9 @@ public class EnglishTwitterFilter
 		
 		EnglishTwitterFilter twitterObj = new EnglishTwitterFilter() ;
 		
-		twitterObj.loadFileForFilteringRandomTweet(path) ;
+//		twitterObj.loadFileForFilteringRandomTweet(path) ;
 		
-	//	twitterObj.loadFileForFiltering(path) ;
+		twitterObj.loadFileForFiltering(path) ;
 	}
 
 }
