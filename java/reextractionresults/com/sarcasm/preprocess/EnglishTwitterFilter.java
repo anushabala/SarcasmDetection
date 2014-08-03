@@ -1,15 +1,7 @@
 package com.sarcasm.preprocess;
 
-import java.io.BufferedReader;
+import java.io.*;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter ;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -53,9 +45,10 @@ public class EnglishTwitterFilter
 		File[] files = f.listFiles() ;
 		
 		BufferedReader reader = null ;
-		BufferedWriter writer  = null ;
-		
-		DetectorFactory.loadProfile(LANG_DETECTOR_PROFILE);
+		String outPath = path + "/training.dat";
+        List<String> sarcasticTweets = new ArrayList<String>();
+        List<String> sentimentTweets = new ArrayList<String>();
+        DetectorFactory.loadProfile(LANG_DETECTOR_PROFILE);
 		 
 		Detector langDetector = DetectorFactory.create();
 	      
@@ -69,9 +62,7 @@ public class EnglishTwitterFilter
 			 reader = new BufferedReader ( new InputStreamReader ( new FileInputStream
 				 ( path + "/" + file.getName()), "UTF-8" ) );
 		
-			 writer = new BufferedWriter ( new OutputStreamWriter ( new FileOutputStream
-				 ( path + "/" + file.getName() + ".06052014"), "UTF-8" ) );
-		
+
 			//the tweets collected from the tweeter has the "hash" name 
 			 //in the file name. So just parse the name to extract the hashtag
 			 //and generate the type (e.g. positive/sarcasm/negative).
@@ -81,14 +72,20 @@ public class EnglishTwitterFilter
 			
 			if ( null == type )
 			{
-				System.out.println("error in message category: check ");
+				logger.warn("Error in message category - check filename: "+file.getName());
 				continue ;
 			}
-			
+            /*
+            Modify the type of the tweet so that the only differentiation is between sarcasm (1) and sentiment (2). By
+            default, the getMessageType() method returns 1,2, or 3 for sarcasm, positive, and negative type respectively.
+             */
+			String modifiedType = type;
+            if (type.equals("3"))
+                modifiedType = "2";
 			//pass this hash to retrieve the list of hashes for the type
 			List<String> hashes = collectHashes() ;
 			
-			Set<String> sarcasmSet = new HashSet<String>() ;
+			Set<String> filteredSet = new HashSet<String>() ;
 			List<String> uniqList = new ArrayList<String>();
 			
 			List<String> removedList = new ArrayList<String>(); 
@@ -110,7 +107,7 @@ public class EnglishTwitterFilter
 				
 				if(features.length != 4)
 				{
-                    logger.debug("Not properly formatted: "+line);
+//                    logger.debug("Not properly formatted: "+line);
 					continue ;
 				}
 				String id = features[0];
@@ -128,28 +125,36 @@ public class EnglishTwitterFilter
 				}
 				
 				tweet = StringUtils.stripAccents(tweet) ;
-				
+
+                if(!TextUtility.hashesConsistent(tweet, type))
+                {
+                    logger.debug("Hashtag type(s) not consistent with the type of the file that the tweet belongs to: "
+                            +tweet);
+                    continue;
+                }
+
 				//remove the word with hash
 				tweet = TextUtility.removeHashes(tweet,hashes);
 				StrTokenizer tokenizer = new StrTokenizer(tweet) ;
-				tokenizer.setTrimmerMatcher(StrMatcher.quoteMatcher());
+//				tokenizer.setTrimmerMatcher(StrMatcher.quoteMatcher());
 				String[] words = tokenizer.getTokenArray() ;
 		
 				
 				//URL filter
 				Boolean url = TextUtility.checkURL(words) ;
-				if (url)
+                if (url)
 				{
 					removedList.add(tweet);
-                    logger.debug("Tweet contains only URL and no other information: "+tweet);
+//                    logger.debug("Tweet contains only URL and no other information: "+tweet);
 					continue ;
 				}
-				
+
+
 				//number of words in respect to the hash
 				Boolean numWords = TextUtility.checkHashPosition(words,hashes) ;
-				if ( numWords)
+				if (numWords)
 				{
-                    logger.debug("Tweet contains hash a majority of hashes: "+tweet);
+//                    logger.debug("Tweet contains a majority of hashes: "+tweet);
 					removedList.add(tweet);
 					continue ;
 				}
@@ -159,21 +164,28 @@ public class EnglishTwitterFilter
 				//final empty
 				if(RTRemoved.isEmpty())
 				{
-                    logger.debug("Tweet is meaningless: "+tweet);
+//                    logger.debug("Tweet is meaningless: "+tweet);
 					continue ;
 				}
 		
 				//only url and touser? - then remove the tweet
 				if(!(TextUtility.checkURLUser(words)))
 				{
-                    logger.debug("Tweet contains only RT and URL: "+tweet);
+//                    logger.debug("Tweet contains only RT and URL: "+tweet);
 					removedList.add(tweet);
 					continue ;
 				}
-				
+
+                //If the tweet is a reply to another tweet, ignore it
+                if(TextUtility.isReply(words, true))
+                {
+                    logger.debug("Tweet is a reply to another tweet: "+tweet);
+                    continue;
+                }
+
 				if(uniqList.contains(RTRemoved))
 				{
-                    logger.debug("Tweet is duplicated: "+tweet);
+//                    logger.debug("Tweet is duplicated: "+tweet);
 					continue ;
 				}
 				else
@@ -184,7 +196,7 @@ public class EnglishTwitterFilter
 				//we need at least some characters! (this is true/false)
 				if(!TextUtility.checkAlphaNumeric(RTRemoved))
 				{
-                    logger.debug("Tweet contains non-alphanumeric characters: "+tweet);
+//                    logger.debug("Tweet contains non-alphanumeric characters: "+tweet);
 					removedList.add(tweet);
 					continue ;
 				}
@@ -193,34 +205,47 @@ public class EnglishTwitterFilter
 				//can delete any tweet from training < 3 words
 				if(RTRemoved.split("\\s++").length <2)
 				{
-                    logger.debug("Tweet has fewer than 3 words.");
+//                    logger.debug("Tweet has fewer than 3 words.");
 					removedList.add(tweet);
 					continue ;
 				}
 				
-				sarcasmSet.add(type + "\t"+id+"\t"+RTRemoved) ;
+				filteredSet.add(modifiedType + "\t" + id + "\t" + RTRemoved) ;
 				
 			}
 			
-			List<String> sarcasmList = new ArrayList<String>(sarcasmSet);
+			List<String> filteredList = new ArrayList<String>(filteredSet);
+			java.util.Collections.shuffle(filteredList) ;
 			
-			java.util.Collections.shuffle(sarcasmList) ;
-			
-			System.out.println("After filtering, we have " + sarcasmList.size() + " for " + file.getName()) ;
-			
-			for ( String sarcasm : sarcasmList )
-			{
-				writer.write(sarcasm) ;
-				writer.newLine() ;
-			}
-			
-			writer.close() ;
+//			System.out.println("After filtering, we have " + filteredList.size() + " for " + file.getName()) ;
+			switch (Integer.parseInt(type))
+            {
+                case 1:
+                    sarcasticTweets.addAll(filteredList);
+                    break;
+                case 2:
+                    sentimentTweets.addAll(filteredList);
+                    break;
+            }
+
 			reader.close();
-			
+
 	//		writeTheRemoved(removedList);
 		}
+        //todo: method to choose random subset of one of the lists in case the size of the other list is much larger
 	}
-	
+
+    private void writeData(String path, List<String> data) throws IOException {
+        BufferedWriter writer = new BufferedWriter (new OutputStreamWriter(new FileOutputStream(path), "UTF-8"));
+        for ( String item : data)
+        {
+            writer.write(item) ;
+            writer.newLine() ;
+        }
+
+        writer.close();
+
+    }
 	public void loadFileForFilteringRandomTweet( String path ) throws IOException, LangDetectException
 	{
 		
@@ -316,7 +341,7 @@ public class EnglishTwitterFilter
 				
 				String[] words = tokenizer.getTokenArray() ;
 		
-				logger.debug("Something else wrong with tweet");
+//				logger.debug("Something else wrong with tweet");
 				//URL filter
 				Boolean url = TextUtility.checkURL(words) ;
 				if (url)

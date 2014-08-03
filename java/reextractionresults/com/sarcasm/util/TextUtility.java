@@ -6,7 +6,13 @@ import java.util.List;
 
 public class TextUtility 
 {
-	private enum Markers
+	private static String[] positives = {"#excited",  "#grateful", "#happy" , "#joy" , "#loved", "#love", "#lucky",
+            "#wonderful", "#positive", "#positivity"};
+    private static String[] negatives = { "#angry" , "#awful" , "#disappointed" , "#fear" ,"#frustrated", "#hate",
+            "#sad", "#scared", "#stressed", "#disappointed"} ;
+    private static String [] sarcasm = {"#sarcasm", "#sarcastic"};
+    private static String[] random = {"#random"};
+    private enum Markers
 	{
 		rt, HTTP, HTTPS
 	}
@@ -93,11 +99,19 @@ public class TextUtility
 			{
 				continue ;
 			}
-			if ( word.startsWith("@"))
+			else if (word.startsWith("@"))
 			{
-				word = "ToUser" ;
+				if(ret.length()==0)
+                    continue;
+                word = "ToUser" ;
 			}
-			if(word.contains(Markers.HTTP.toString() +"://") || word.contains(Markers.HTTPS.toString()+"://"))
+            else if(word.startsWith("\"") && word.length()>1 && word.charAt(1)=='@')
+            {
+                if(ret.length()==0)
+                    continue;
+                word = "\"ToUser";
+            }
+			else if(word.contains(Markers.HTTP.toString() +"://") || word.contains(Markers.HTTPS.toString()+"://"))
 			{
 				word = "URL" ;
 			}
@@ -193,32 +207,13 @@ public class TextUtility
 	public static String getMessageType(String hash) 
 	{
 		// TODO Auto-generated method stub
-		String [] positives = {"#excited",  "#grateful", "#happy" ,
-				  "#joy" , "#loved", "#love", "#lucky", 
-				  "#wonderful", "#positive", "#positivity"} ;
-		
+
 		List<String> posHashes = new ArrayList<String>(Arrays.asList(positives));
-		
-		
-		String [] negatives = { "#angry" , "#awful" , "#disappointed" ,
-				 "#fear" ,"#frustrated", "#hate",
-				  "#sad", "#scared", "#stressed",
-				  "#disappointed"} ;
-		
 		List<String> negHashes = new ArrayList<String>(Arrays.asList(negatives));
-		
-		
-		String [] sarcasm = {"#sarcasm", "#sarcastic" } ;
-		
-		
 		List<String> sarcHashes = new ArrayList<String>(Arrays.asList(sarcasm));
-		
-		String [] random = {"#random" } ;
 		List<String> randomHashes = new ArrayList<String>(Arrays.asList(random));
-		
-		
-			
-		if ( posHashes.contains(hash))
+
+		if (posHashes.contains(hash))
 		{
 			return "2" ;
 		}
@@ -250,9 +245,6 @@ public class TextUtility
 			}
 			
 		}
-		
-		
-		
 		return false;
 	}
 
@@ -287,4 +279,55 @@ public class TextUtility
 		return false;
 	}
 
+    /**
+     * If the tweet is a reply/response to another tweet, we want to discard it because the original tweet might contain
+     * the sarcasm rather than the new tweet, and it would be difficult to separate the two since the formatting isn't
+     * consistent.
+     * @param words All the tokens in the tweet
+     * @param mentionsReplaced set to true if all the user mentions have already been replaced by ToUser, false otherwise
+     * @return true if the tweet is a reply to another tweet, false otherwise.
+     */
+    public static boolean isReply(String[] words, boolean mentionsReplaced) {
+        // Tweets that are replies usually contain the pattern "@ or "ToUser (depending on whether user mentions in the
+        // tweet have been replaced by ToUser or not. If this pattern is found, then the tweet is a reply.
+        String search = "\"@";
+        if(!mentionsReplaced)
+            search = "\"@";
+        for(String word: words)
+        {
+            if(word.trim().startsWith(search))
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * Checks whether the hashtags present in the tweet are all consistent with the original inferred type of the tweet
+     * or not.
+     * @param tweet All the tokens in the tweet
+     * @param type The type of the tweet (as inferred from the filename of the file it was extracted from)
+     * @return true if the hashtags in the tweet are consistent with type, false otherwise.
+     */
+    public static boolean hashesConsistent(String tweet, String type)
+    {
+        int hashPos = tweet.indexOf('#');
+        if(hashPos==-1)
+            return false; //tweet should contain at least one hashtag pertaining to the message type
+        while (hashPos>0)
+        {
+            int end = tweet.indexOf(' ', hashPos);
+            if(end<0)
+                end = tweet.length()-1;
+            String word = tweet.substring(hashPos, end);
+            if(word.charAt(0)=='#')
+            {
+                // If a hashtag is found and it's of a different type than the tweet type, return false.
+                String hashType = getMessageType(word);
+                if(hashType!=null && !hashType.equals(type))
+                    return false;
+            }
+            hashPos = tweet.indexOf('#', end);
+        }
+        return true;
+    }
 }
