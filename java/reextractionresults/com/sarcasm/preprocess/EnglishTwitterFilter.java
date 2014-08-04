@@ -2,14 +2,9 @@ package com.sarcasm.preprocess;
 
 import java.io.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrMatcher;
 import org.apache.commons.lang3.text.StrTokenizer;
 
 import com.sarcasm.util.TextUtility;
@@ -28,33 +23,33 @@ public class EnglishTwitterFilter
 			  "#joy" , "#loved", "#love", "#lucky", "#sad", "#scared", "#stressed",
 			  "#wonderful", "#positive", "#positivity", "#disappointed"} ;
 	
+    private Detector langDetector;
+	private static final int MAX_RANDOM = 200000 ;
 
-	
-	 private static final int MAX_RANDOM = 200000 ;
+	public EnglishTwitterFilter() throws LangDetectException {
+        DetectorFactory.loadProfile(LANG_DETECTOR_PROFILE);
 
-	public EnglishTwitterFilter()
-	{
-		
 	}
 	
 	public void loadFileForFiltering( String path ) throws IOException, LangDetectException
 	{
-		
 		File f = new File(path) ;
 		
 		File[] files = f.listFiles() ;
 		
 		BufferedReader reader = null ;
-		String outPath = path + "/training.dat";
+        String week = "";
+        if(path.contains("Week_"))
+        {
+            week = '_' + path.substring(path.indexOf("Week_"));
+        }
+		String outPath = path + "/training"+week+".dat";
         List<String> sarcasticTweets = new ArrayList<String>();
         List<String> sentimentTweets = new ArrayList<String>();
-        DetectorFactory.loadProfile(LANG_DETECTOR_PROFILE);
-		 
-		Detector langDetector = DetectorFactory.create();
-	      
+
 		for ( File file : files )
 		{
-			
+            langDetector = DetectorFactory.create();
 			if(file.getName().contains("Store") || file.getName().contains("new_tweet"))
 			{
 				continue ;
@@ -125,21 +120,25 @@ public class EnglishTwitterFilter
 				}
 				
 				tweet = StringUtils.stripAccents(tweet) ;
-
+                tweet = TextUtility.replaceDoubleQuotes(tweet);
                 if(!TextUtility.hashesConsistent(tweet, type))
                 {
-                    logger.debug("Hashtag type(s) not consistent with the type of the file that the tweet belongs to: "
-                            +tweet);
+//                    logger.debug("Hashtag type(s) not consistent with the type of the file that the tweet belongs to: "
+//                            +tweet);
                     continue;
                 }
 
+                if(TextUtility.isTweetTruncated(tweet))
+                {
+//                    logger.debug("Tweet is truncated: "+tweet);
+                    continue;
+                }
 				//remove the word with hash
 				tweet = TextUtility.removeHashes(tweet,hashes);
 				StrTokenizer tokenizer = new StrTokenizer(tweet) ;
 //				tokenizer.setTrimmerMatcher(StrMatcher.quoteMatcher());
 				String[] words = tokenizer.getTokenArray() ;
-		
-				
+
 				//URL filter
 				Boolean url = TextUtility.checkURL(words) ;
                 if (url)
@@ -148,7 +147,6 @@ public class EnglishTwitterFilter
 //                    logger.debug("Tweet contains only URL and no other information: "+tweet);
 					continue ;
 				}
-
 
 				//number of words in respect to the hash
 				Boolean numWords = TextUtility.checkHashPosition(words,hashes) ;
@@ -179,7 +177,7 @@ public class EnglishTwitterFilter
                 //If the tweet is a reply to another tweet, ignore it
                 if(TextUtility.isReply(words, true))
                 {
-                    logger.debug("Tweet is a reply to another tweet: "+tweet);
+//                    logger.debug("Tweet is a reply to another tweet: "+tweet);
                     continue;
                 }
 
@@ -232,8 +230,44 @@ public class EnglishTwitterFilter
 
 	//		writeTheRemoved(removedList);
 		}
+        List<String> dataset = createBalancedSet(sarcasticTweets, sentimentTweets);
+        writeData(outPath, dataset);
         //todo: method to choose random subset of one of the lists in case the size of the other list is much larger
 	}
+
+    private List<String> createBalancedSet(List<String> sarcasticTweets, List<String> sentimentTweets) {
+        logger.info("Number of sarcastic tweets: "+sarcasticTweets.size());
+        logger.info("Number of sentiment tweets: " + sentimentTweets.size());
+        ArrayList<String> dataset = new ArrayList<String>();
+        if(sarcasticTweets.size()==sentimentTweets.size())
+        {
+            dataset.addAll(sarcasticTweets);
+            dataset.addAll(sentimentTweets);
+            return dataset;
+        }
+        List<String> biggerList = sentimentTweets;
+        List<String> smallerList = sarcasticTweets;
+        if(sarcasticTweets.size()>sentimentTweets.size())
+        {
+            biggerList = sarcasticTweets;
+            smallerList = sentimentTweets;
+        }
+        dataset.addAll(smallerList);
+
+        final int BALANCED_SIZE = smallerList.size();
+        Random selector = new Random();
+        int added = 0;
+        while (added<BALANCED_SIZE)
+        {
+            int pos = selector.nextInt(BALANCED_SIZE-added);
+            dataset.add(biggerList.get(pos+added));
+            Collections.swap(biggerList, pos+added, added);
+            added++;
+        }
+
+        Collections.shuffle(dataset);
+        return dataset;
+    }
 
     private void writeData(String path, List<String> data) throws IOException {
         BufferedWriter writer = new BufferedWriter (new OutputStreamWriter(new FileOutputStream(path), "UTF-8"));
@@ -244,7 +278,7 @@ public class EnglishTwitterFilter
         }
 
         writer.close();
-
+        logger.info("Wrote data to " + path);
     }
 	public void loadFileForFilteringRandomTweet( String path ) throws IOException, LangDetectException
 	{
@@ -460,13 +494,18 @@ public class EnglishTwitterFilter
 	public static void main(String[] args) throws IOException, LangDetectException 
 	{
 		// TODO Auto-generated method stub
-        String path = "/Users/anushabala/PycharmProjects/SarcasmDetection/weekly_data_constrained/temp" ;
+        String path = "/Users/anushabala/PycharmProjects/SarcasmDetection/weekly_data_constrained/Week_" ;
 		
 		EnglishTwitterFilter twitterObj = new EnglishTwitterFilter() ;
 		
 //		twitterObj.loadFileForFilteringRandomTweet(path) ;
-		
-		twitterObj.loadFileForFiltering(path) ;
-	}
+		for(int i=1; i<=18; i++)
+        {
+            String week_path = path + Integer.toString(i);
+            logger.info(week_path);
+            twitterObj.loadFileForFiltering(week_path) ;
+        }
+
+    }
 
 }

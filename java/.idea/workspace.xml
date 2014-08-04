@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="35e668b4-8034-44a9-932f-fd85f06dd1d5" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SarcasmDetection.iml" afterPath="$PROJECT_DIR$/SarcasmDetection.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/reextractionresults/com/sarcasm/preprocess/EnglishTwitterFilter.java" afterPath="$PROJECT_DIR$/reextractionresults/com/sarcasm/preprocess/EnglishTwitterFilter.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/reextractionresults/com/sarcasm/util/TextUtility.java" afterPath="$PROJECT_DIR$/reextractionresults/com/sarcasm/util/TextUtility.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="SarcasmDetection.iws" />
@@ -15,6 +15,9 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
+  <component name="CompilerWorkspaceConfiguration">
+    <option name="COMPILER_PROCESS_HEAP_SIZE" value="2000" />
+  </component>
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
   </component>
@@ -27,28 +30,43 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="EnglishTwitterFilter.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="EnglishTwitterFilter.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/reextractionresults/com/sarcasm/preprocess/EnglishTwitterFilter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.51724136" vertical-offset="1935" max-vertical-offset="4275">
-              <caret line="143" column="36" selection-start-line="143" selection-start-column="36" selection-end-line="143" selection-end-column="36" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="450" max-vertical-offset="5235">
+              <caret line="51" column="52" selection-start-line="51" selection-start-column="52" selection-end-line="51" selection-end-column="52" />
               <folding>
                 <element signature="imports" expanded="true" />
+                <element signature="e#1582#1590#0" expanded="true" />
+                <element signature="e#1646#1654#0" expanded="true" />
+                <element signature="e#2931#2939#0" expanded="true" />
+                <element signature="e#2984#2992#0" expanded="true" />
+                <element signature="e#3043#3051#0" expanded="true" />
+                <element signature="e#6775#6783#0" expanded="true" />
+                <element signature="e#7846#7854#0" expanded="true" />
                 <element signature="method#loadFileForFilteringRandomTweet#0;class#EnglishTwitterFilter#0" expanded="false" />
-                <element signature="e#9976#9984#0" expanded="true" />
-                <element signature="e#10647#10655#0" expanded="true" />
-                <element signature="e#10820#10828#0" expanded="true" />
+                <element signature="e#10464#10472#0" expanded="true" />
+                <element signature="e#10517#10525#0" expanded="true" />
+                <element signature="e#10576#10584#0" expanded="true" />
+                <element signature="e#13013#13021#0" expanded="true" />
+                <element signature="e#13684#13692#0" expanded="true" />
+                <element signature="e#13857#13865#0" expanded="true" />
+                <marker date="1407111349000" expanded="true" signature="6547:6559" placeholder="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TextUtility.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="TextUtility.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/reextractionresults/com/sarcasm/util/TextUtility.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="3095" max-vertical-offset="4410">
-              <caret line="205" column="12" selection-start-line="205" selection-start-column="12" selection-end-line="205" selection-end-column="12" />
-              <folding />
+            <state vertical-scroll-proportion="0.79310346" vertical-offset="4995" max-vertical-offset="5445">
+              <caret line="363" column="4" selection-start-line="363" selection-start-column="1" selection-end-line="363" selection-end-column="1" />
+              <folding>
+                <element signature="e#4429#4437#0" expanded="true" />
+                <element signature="e#8495#8496#0" expanded="true" />
+                <element signature="e#8558#8559#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -66,6 +84,7 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
+        <option value="$PROJECT_DIR$/reextractionresults/com/sarcasm/util/TextUtility.java" />
         <option value="$PROJECT_DIR$/reextractionresults/com/sarcasm/preprocess/EnglishTwitterFilter.java" />
       </list>
     </option>
@@ -177,6 +196,36 @@
               <option name="myItemId" value="sarcasm" />
               <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
             </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="util" />
+              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="SarcasmDetection" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="reextractionresults" />
+              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="com" />
+              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sarcasm" />
+              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="preprocess" />
+              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -217,7 +266,7 @@
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="last_opened_file_path" value="$USER_HOME$/Downloads/apache-log4j-1.2.17/log4j-1.2.17.jar!/" />
-    <property name="options.lastSelected" value="project.propVCSSupport.Mappings" />
+    <property name="options.lastSelected" value="project.propCompiler" />
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
@@ -232,6 +281,22 @@
   <component name="RunManager" selected="Application.EnglishTwitterFilter">
     <configuration default="false" name="EnglishTwitterFilter" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.sarcasm.preprocess.EnglishTwitterFilter" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="SarcasmDetection" />
+      <envs />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="TextUtility" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.sarcasm.util.TextUtility" />
       <option name="VM_PARAMETERS" />
       <option name="PROGRAM_PARAMETERS" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
@@ -375,12 +440,14 @@
       <option name="FILTER_LOGCAT_AUTOMATICALLY" value="true" />
       <method />
     </configuration>
-    <list size="1">
+    <list size="2">
       <item index="0" class="java.lang.String" itemvalue="Application.EnglishTwitterFilter" />
+      <item index="1" class="java.lang.String" itemvalue="Application.TextUtility" />
     </list>
     <recent_temporary>
-      <list size="1">
+      <list size="2">
         <item index="0" class="java.lang.String" itemvalue="Application.EnglishTwitterFilter" />
+        <item index="1" class="java.lang.String" itemvalue="Application.TextUtility" />
       </list>
     </recent_temporary>
     <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
@@ -410,12 +477,16 @@
       <created>1407009278446</created>
       <updated>1407009278446</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="EnglishTwitterFilter: Changed code so that it creates one large data file with all the training data after filtering, rather than create files for each hashtag. &#10;TextUtility: Added some additional filtering methods - if a tweet has hashtags that contradict the file that it's from, those tweets are ignored. Tweets that are replies to other tweets (or quote other tweets) are also ignored.&#10;- Moved some members and methods around in both classes.">
+      <created>1407057313828</created>
+      <updated>1407057313829</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="22" width="1260" height="760" extended-state="0" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
@@ -434,7 +505,7 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3299566" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -460,7 +531,8 @@
     <MESSAGE value="- Modified IntelliJ project properties to add needed dependencies" />
     <MESSAGE value="- Changed some file paths in EnglishTwitterFilter to reflect paths on current machine" />
     <MESSAGE value="- Made some changes to the code in EnglishTwitterFilter to accommodate new file format and ensure that tweets are filtered properly" />
-    <option name="LAST_COMMIT_MESSAGE" value="- Made some changes to the code in EnglishTwitterFilter to accommodate new file format and ensure that tweets are filtered properly" />
+    <MESSAGE value="EnglishTwitterFilter: Changed code so that it creates one large data file with all the training data after filtering, rather than create files for each hashtag. &#10;TextUtility: Added some additional filtering methods - if a tweet has hashtags that contradict the file that it's from, those tweets are ignored. Tweets that are replies to other tweets (or quote other tweets) are also ignored.&#10;- Moved some members and methods around in both classes." />
+    <option name="LAST_COMMIT_MESSAGE" value="EnglishTwitterFilter: Changed code so that it creates one large data file with all the training data after filtering, rather than create files for each hashtag. &#10;TextUtility: Added some additional filtering methods - if a tweet has hashtags that contradict the file that it's from, those tweets are ignored. Tweets that are replies to other tweets (or quote other tweets) are also ignored.&#10;- Moved some members and methods around in both classes." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -542,14 +614,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/reextractionresults/com/sarcasm/util/TextUtility.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="3095" max-vertical-offset="4410">
-          <caret line="205" column="12" selection-start-line="205" selection-start-column="12" selection-end-line="205" selection-end-column="12" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/reextractionresults/com/deft/sarcasm/postprocess/RefTargetPair.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-0.13793103" vertical-offset="90" max-vertical-offset="525">
@@ -570,14 +634,37 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/reextractionresults/com/sarcasm/preprocess/EnglishTwitterFilter.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.51724136" vertical-offset="1935" max-vertical-offset="4275">
-          <caret line="143" column="36" selection-start-line="143" selection-start-column="36" selection-end-line="143" selection-end-column="36" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="450" max-vertical-offset="5235">
+          <caret line="51" column="52" selection-start-line="51" selection-start-column="52" selection-end-line="51" selection-end-column="52" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="e#1582#1590#0" expanded="true" />
+            <element signature="e#1646#1654#0" expanded="true" />
+            <element signature="e#2931#2939#0" expanded="true" />
+            <element signature="e#2984#2992#0" expanded="true" />
+            <element signature="e#3043#3051#0" expanded="true" />
+            <element signature="e#6775#6783#0" expanded="true" />
+            <element signature="e#7846#7854#0" expanded="true" />
             <element signature="method#loadFileForFilteringRandomTweet#0;class#EnglishTwitterFilter#0" expanded="false" />
-            <element signature="e#9976#9984#0" expanded="true" />
-            <element signature="e#10647#10655#0" expanded="true" />
-            <element signature="e#10820#10828#0" expanded="true" />
+            <element signature="e#10464#10472#0" expanded="true" />
+            <element signature="e#10517#10525#0" expanded="true" />
+            <element signature="e#10576#10584#0" expanded="true" />
+            <element signature="e#13013#13021#0" expanded="true" />
+            <element signature="e#13684#13692#0" expanded="true" />
+            <element signature="e#13857#13865#0" expanded="true" />
+            <marker date="1407111349000" expanded="true" signature="6547:6559" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/reextractionresults/com/sarcasm/util/TextUtility.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.79310346" vertical-offset="4995" max-vertical-offset="5445">
+          <caret line="363" column="4" selection-start-line="363" selection-start-column="1" selection-end-line="363" selection-end-column="1" />
+          <folding>
+            <element signature="e#4429#4437#0" expanded="true" />
+            <element signature="e#8495#8496#0" expanded="true" />
+            <element signature="e#8558#8559#0" expanded="true" />
           </folding>
         </state>
       </provider>

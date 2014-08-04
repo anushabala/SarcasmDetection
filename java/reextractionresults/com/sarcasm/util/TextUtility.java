@@ -1,12 +1,18 @@
 package com.sarcasm.util;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.lang.System.exit;
+
 public class TextUtility 
 {
-	private static String[] positives = {"#excited",  "#grateful", "#happy" , "#joy" , "#loved", "#love", "#lucky",
+	private static Logger logger = Logger.getLogger(TextUtility.class);
+    private static String[] positives = {"#excited",  "#grateful", "#happy" , "#joy" , "#loved", "#love", "#lucky",
             "#wonderful", "#positive", "#positivity"};
     private static String[] negatives = { "#angry" , "#awful" , "#disappointed" , "#fear" ,"#frustrated", "#hate",
             "#sad", "#scared", "#stressed", "#disappointed"} ;
@@ -16,6 +22,7 @@ public class TextUtility
 	{
 		rt, HTTP, HTTPS
 	}
+
 	public static int countChars(String line, char c) 
 	{
 		// TODO Auto-generated method stub
@@ -233,7 +240,7 @@ public class TextUtility
 		return null;
 	}
 
-	public static boolean  checkURLUser(String[] tokens) 
+	public static boolean  checkURLUser(String[] tokens)
 	{
 		// TODO Auto-generated method stub
 		
@@ -311,7 +318,7 @@ public class TextUtility
     public static boolean hashesConsistent(String tweet, String type)
     {
         int hashPos = tweet.indexOf('#');
-        if(hashPos==-1)
+        if(hashPos<0)
             return false; //tweet should contain at least one hashtag pertaining to the message type
         while (hashPos>0)
         {
@@ -319,15 +326,39 @@ public class TextUtility
             if(end<0)
                 end = tweet.length()-1;
             String word = tweet.substring(hashPos, end);
-            if(word.charAt(0)=='#')
-            {
+            if(word.length()==0)
+                return false; //tweet has an empty hashtag, so it was probably truncated while getting it from Twitter
+            if (word.charAt(0) == '#') {
                 // If a hashtag is found and it's of a different type than the tweet type, return false.
                 String hashType = getMessageType(word);
-                if(hashType!=null && !hashType.equals(type))
+                if (hashType != null && !hashType.equals(type))
                     return false;
             }
             hashPos = tweet.indexOf('#', end);
         }
         return true;
     }
+
+    /**
+     * Replace all occurrences of curved double quotes characters with regular double quotes.
+     * @param tweet The tweet to be filtered.
+     * @return The tweet with quotes replaced.
+     */
+    public static String replaceDoubleQuotes(String tweet)
+    {
+        return StringUtils.replace(tweet, "“”", "\"\"");
+    }
+
+    /**
+     * Returns true if the tweet ends with the ellipsis character, indicating that it was truncated while getting it
+     * from the Twitter API.
+     * @param tweet The tweet to be checked
+     * @return true if the tweet appears truncated, false otherwise.
+     */
+    public static boolean isTweetTruncated(String tweet)
+    {
+        tweet = tweet.trim();
+        return StringUtils.endsWith(tweet, "…");
+    }
+
 }
