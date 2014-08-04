@@ -23,7 +23,6 @@ public class EnglishTwitterFilter
 			  "#joy" , "#loved", "#love", "#lucky", "#sad", "#scared", "#stressed",
 			  "#wonderful", "#positive", "#positivity", "#disappointed"} ;
 	
-    private Detector langDetector;
 	private static final int MAX_RANDOM = 200000 ;
 
 	public EnglishTwitterFilter() throws LangDetectException {
@@ -49,7 +48,6 @@ public class EnglishTwitterFilter
 
 		for ( File file : files )
 		{
-            langDetector = DetectorFactory.create();
 			if(file.getName().contains("Store") || file.getName().contains("new_tweet"))
 			{
 				continue ;
@@ -111,11 +109,10 @@ public class EnglishTwitterFilter
 				//we need to filter this tweet
 				
 				//detect language
-				langDetector.append(tweet) ;
-				String language = langDetector.detect();
+				String language = detectLanguage(tweet);
 				if(!language.equalsIgnoreCase("en"))
 				{
-					System.out.println("other language? " + language) ;
+					logger.debug("Tweet is in another language: "+language+"\t"+tweet); ;
 					continue ;
 				}
 				
@@ -486,6 +483,16 @@ public class EnglishTwitterFilter
 		return null;
 	}
 
+    /**
+     * Uses the Detector class to detect the language of a given piece of text.
+     * @param tweet The tweet to detect the language for.
+     * @return The language code for the detected language.
+     */
+    private String detectLanguage(String tweet) throws LangDetectException {
+        Detector langDetector = DetectorFactory.create();
+        langDetector.append(tweet);
+        return langDetector.detect();
+    }
 	/**
 	 * @param args
 	 * @throws IOException 
