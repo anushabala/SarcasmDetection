@@ -112,7 +112,7 @@ public class EnglishTwitterFilter
 				String language = detectLanguage(tweet);
 				if(!language.equalsIgnoreCase("en"))
 				{
-					logger.debug("Tweet is in another language: "+language+"\t"+tweet); ;
+//					logger.debug("Tweet is in another language: "+language+"\t"+tweet);
 					continue ;
 				}
 				
