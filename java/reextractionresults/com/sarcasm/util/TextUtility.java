@@ -65,13 +65,13 @@ public class TextUtility {
                 continue;
             }
 
-            if (word.contains(Markers.HTTP.toString() + "://") || word.contains(Markers.HTTPS.toString() + "://")) {
+            if (word.contains(Markers.HTTP.toString().toLowerCase() + "://") ||
+                    word.contains(Markers.HTTPS.toString().toLowerCase() + "://")) {
                 urlIndex = index;
             }
 
             index++;
         }
-
         //a short tweet with URL in the beginning - a lot of times they are garbage
         if ((urlIndex <= 2) && (index <= 2)) {
             return true;
@@ -95,7 +95,8 @@ public class TextUtility {
                 if (ret.length() == 0)
                     continue;
                 word = "\"ToUser";
-            } else if (word.contains(Markers.HTTP.toString() + "://") || word.contains(Markers.HTTPS.toString() + "://")) {
+            } else if (word.contains(Markers.HTTP.toString().toLowerCase() + "://") ||
+                    word.contains(Markers.HTTPS.toString().toLowerCase() + "://")) {
                 word = "URL";
             }
             ret.append(word);
