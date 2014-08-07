@@ -18,6 +18,8 @@ public class EnglishTwitterFilter {
             "#excited", "#fear", "#frustrated", "#grateful", "#happy", "#hate",
             "#joy", "#loved", "#love", "#lucky", "#sad", "#scared", "#stressed",
             "#wonderful", "#positive", "#positivity", "#disappointed"};
+    private static final String OUT_DIR = "/Users/anushabala/PycharmProjects/SarcasmDetection/" +
+            "weekly_data_constrained/filtered_data";
 
     private static final int MAX_RANDOM = 200000;
 
@@ -36,11 +38,13 @@ public class EnglishTwitterFilter {
         if (path.contains("Week_")) {
             week = '_' + path.substring(path.indexOf("Week_"));
         }
-        String outPath = path + "/training" + week + ".dat";
+        String outPath = OUT_DIR + "/training" + week + ".dat";
         List<String> sarcasticTweets = new ArrayList<String>();
         List<String> sentimentTweets = new ArrayList<String>();
+        int otherLangCount = 0;
 
         for (File file : files) {
+
             if (file.getName().contains("Store") || file.getName().contains("new_tweet")) {
                 continue;
             }
@@ -97,8 +101,9 @@ public class EnglishTwitterFilter {
 
                 //detect language
                 String language = detectLanguage(tweet);
-                if (!language.equalsIgnoreCase("en")) {
+                if (language==null || !language.equalsIgnoreCase("en")) {
 //					logger.debug("Tweet is in another language: "+language+"\t"+tweet);
+                    otherLangCount++;
                     continue;
                 }
 
@@ -201,8 +206,8 @@ public class EnglishTwitterFilter {
             //		writeTheRemoved(removedList);
         }
         List<String> dataset = createBalancedSet(sarcasticTweets, sentimentTweets);
+        logger.info("Number of tweets in another language: "+otherLangCount);
         writeData(outPath, dataset);
-        //todo: method to choose random subset of one of the lists in case the size of the other list is much larger
     }
 
     private List<String> createBalancedSet(List<String> sarcasticTweets, List<String> sentimentTweets) {
@@ -401,21 +406,17 @@ public class EnglishTwitterFilter {
     }
 
     private void writeTheRemoved(List<String> removedList) {
-        // TODO Auto-generated method stub
         for (String remove : removedList) {
             System.out.println(remove);
         }
     }
 
     private List<String> collectHashes() {
-        // TODO Auto-generated method stub
-
         List<String> hashes = new ArrayList<String>(Arrays.asList(hashtags));
         return hashes;
     }
 
     private String getHash(String file) {
-        // TODO Auto-generated method stub
         List<String> hashList = new ArrayList<String>(Arrays.asList(hashtags));
 
         for (String hash : hashList) {
@@ -437,7 +438,15 @@ public class EnglishTwitterFilter {
     private String detectLanguage(String tweet) throws LangDetectException {
         Detector langDetector = DetectorFactory.create();
         langDetector.append(tweet);
-        return langDetector.detect();
+        String lang = "";
+        try {
+            lang = langDetector.detect();
+        }
+        catch (LangDetectException lde)
+        {
+            lang = null;
+        }
+        return lang;
     }
 
     /**
@@ -446,7 +455,6 @@ public class EnglishTwitterFilter {
      * @throws LangDetectException
      */
     public static void main(String[] args) throws IOException, LangDetectException {
-        // TODO Auto-generated method stub
         String path = "/Users/anushabala/PycharmProjects/SarcasmDetection/weekly_data_constrained/Week_";
 
         EnglishTwitterFilter twitterObj = new EnglishTwitterFilter();
