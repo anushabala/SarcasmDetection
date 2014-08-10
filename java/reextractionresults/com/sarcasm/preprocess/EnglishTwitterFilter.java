@@ -7,9 +7,12 @@ import com.sarcasm.util.TextUtility;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrTokenizer;
 import org.apache.log4j.Logger;
+import org.junit.Test;
 
 import java.io.*;
 import java.util.*;
+
+import static org.junit.Assert.assertEquals;
 
 public class EnglishTwitterFilter {
     private static Logger logger = Logger.getLogger(EnglishTwitterFilter.class);
@@ -18,14 +21,24 @@ public class EnglishTwitterFilter {
             "#excited", "#fear", "#frustrated", "#grateful", "#happy", "#hate",
             "#joy", "#loved", "#love", "#lucky", "#sad", "#scared", "#stressed",
             "#wonderful", "#positive", "#positivity", "#disappointed"};
-    private static final String OUT_DIR = "/Users/anushabala/PycharmProjects/SarcasmDetection/" +
-            "weekly_data_constrained/filtered_data";
+    private static final String PROPERTY_FILE = "com/preprocess.properties";
+    public String OUT_DIR;
+    public Properties properties;
 
     private static final int MAX_RANDOM = 200000;
 
     public EnglishTwitterFilter() throws LangDetectException {
         DetectorFactory.loadProfile(LANG_DETECTOR_PROFILE);
-
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(PROPERTY_FILE);
+        properties = new Properties();
+        if (inputStream==null)
+            logger.warn("Property file at "+PROPERTY_FILE+" not found.");
+        try {
+            properties.load(inputStream);
+        } catch (IOException e) {
+            logger.warn("Unable to load properties file at "+PROPERTY_FILE);
+        }
+        OUT_DIR = properties.getProperty("FILTERED_DATA_DIR");
     }
 
     public void loadFileForFiltering(String path) throws IOException, LangDetectException {
@@ -455,10 +468,9 @@ public class EnglishTwitterFilter {
      * @throws LangDetectException
      */
     public static void main(String[] args) throws IOException, LangDetectException {
-        String path = "/Users/anushabala/PycharmProjects/SarcasmDetection/weekly_data_constrained/Week_";
 
         EnglishTwitterFilter twitterObj = new EnglishTwitterFilter();
-
+        String path = twitterObj.properties.getProperty("WEEKLY_DATA_DIR_TEMPLATE");
 //		twitterObj.loadFileForFilteringRandomTweet(path) ;
         for (int i = 1; i <= 18; i++) {
             String week_path = path + Integer.toString(i);
