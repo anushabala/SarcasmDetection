@@ -462,16 +462,29 @@ public class EnglishTwitterFilter {
     }
 
     /**
-     * @param args
+     * @param args Two command-line arguments that numerically specify the first week and the last week of the
+     *             Twitter data to be filtered. e.g. Providing command line arguments 1 18 will filter the data for all
+     *             weeks between 1 and 18, inclusive.
      * @throws IOException
      * @throws LangDetectException
      */
     public static void main(String[] args) throws IOException, LangDetectException {
+        if(args.length!=2)
+        {
+            logger.fatal("Usage: java EnglishTwitterFilter first_week second_week\n" +
+                    "first_week: The number of the first week of the data to be filtered.\n" +
+                    "second_week: The number of the last week of the data to be filtered.\n" +
+                    "Example: java EnglishTwitterFilter 1 18\n" +
+                    "\tFilters data for all weeks between 1 and 18, inclusive.");
+            System.exit(1);
+        }
 
+        int start_week = Integer.parseInt(args[0]);
+        int end_week = Integer.parseInt(args[1]);
         EnglishTwitterFilter twitterObj = new EnglishTwitterFilter();
         String path = twitterObj.properties.getProperty("WEEKLY_DATA_DIR_TEMPLATE");
 //		twitterObj.loadFileForFilteringRandomTweet(path) ;
-        for (int i = 1; i <= 18; i++) {
+        for (int i = start_week; i <= end_week; i++) {
             String week_path = path + Integer.toString(i);
             logger.info(week_path);
             twitterObj.loadFileForFiltering(week_path);
