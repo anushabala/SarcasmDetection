@@ -7,7 +7,6 @@ import com.sarcasm.util.TextUtility;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrTokenizer;
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import java.io.*;
 import java.util.*;
@@ -21,7 +20,7 @@ public class EnglishTwitterFilter {
             "#excited", "#fear", "#frustrated", "#grateful", "#happy", "#hate",
             "#joy", "#loved", "#love", "#lucky", "#sad", "#scared", "#stressed",
             "#wonderful", "#positive", "#positivity", "#disappointed"};
-    private static final String PROPERTY_FILE = "com/preprocess.properties";
+    private static final String PROPERTY_FILE = "com/config/preprocess.properties";
     public String OUT_DIR;
     public Properties properties;
 
