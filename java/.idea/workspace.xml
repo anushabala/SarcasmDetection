@@ -3,9 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="35e668b4-8034-44a9-932f-fd85f06dd1d5" name="Default" comment="- Fixed error in detecting URLs">
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/reextractionresults/com/classify/DatasetSplitter.java" />
-    </list>
-    <list id="2a55eb20-198b-4fd8-bc7d-ae0d4fec5435" name="Modified some project settings" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SarcasmDetection.iml" afterPath="$PROJECT_DIR$/SarcasmDetection.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="SarcasmDetection.iws" />
@@ -546,7 +543,7 @@
       <changelist id="" name="Properties changed" comment="" />
       <changelist id="" name="Design change" comment="" />
       <changelist id="" name="Added log4j XML config" comment="" />
-      <changelist id="2a55eb20-198b-4fd8-bc7d-ae0d4fec5435" name="Modified some project settings" comment="" />
+      <changelist id="" name="Modified some project settings" comment="" />
       <created>1406934635866</created>
       <updated>1406934635866</updated>
     </task>
@@ -606,7 +603,11 @@
       <created>1407709357750</created>
       <updated>1407709357750</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="Modified some project settings">
+      <created>1407709400923</created>
+      <updated>1407709400923</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -667,7 +668,8 @@
     <MESSAGE value="Moved properties file to its own package" />
     <MESSAGE value="Added command-line args to EnglishTwitterFilter to specify the week range to be filtered." />
     <MESSAGE value="Added log4j XML config" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added log4j XML config" />
+    <MESSAGE value="Modified some project settings" />
+    <option name="LAST_COMMIT_MESSAGE" value="Modified some project settings" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
