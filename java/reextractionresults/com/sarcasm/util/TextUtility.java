@@ -244,7 +244,7 @@ public class TextUtility {
         if (!mentionsReplaced)
             search = "\"@";
         for (String word : words) {
-            if (word.trim().startsWith(search))
+            if (word.trim().contains(search))
                 return true;
         }
         return false;
@@ -287,7 +287,8 @@ public class TextUtility {
      * @return The tweet with quotes replaced.
      */
     public static String replaceDoubleQuotes(String tweet) {
-        return StringUtils.replace(tweet, "“”", "\"\"");
+        tweet = StringUtils.replace(tweet, "”", "\"");
+        return StringUtils.replace(tweet, "“", "\"");
     }
 
     /**
