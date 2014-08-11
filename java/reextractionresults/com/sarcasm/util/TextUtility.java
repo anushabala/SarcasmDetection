@@ -300,7 +300,7 @@ public class TextUtility {
      * @param tweet the tweet for which user mentions need to be reformatted
      * @return The reformatted tweet
      */
-    public static String reformatUserMentions(String tweet)
+    public static String reformatUserMentions(String tweet) throws StringIndexOutOfBoundsException
     {
         StringBuilder reformattedTweet = new StringBuilder();
         tweet = tweet.trim()+' ';
@@ -313,14 +313,22 @@ public class TextUtility {
         {
             int start = userMentionMatcher.start();
             int mentionStart = start+1;
-            int mentionEnd = tweet.indexOf(' ',userMentionMatcher.end())+1;
-            String prevWord = tweet.substring(prevEnd, start+1);
-            reformattedTweet.append(prevWord).append(" ");
+
+            int mentionEnd = tweet.indexOf(' ',userMentionMatcher.end());
+            if(mentionEnd<0)
+                mentionEnd = tweet.length();
+
+            String prevWord = tweet.substring(prevEnd, mentionStart);
+            if(prevWord.length()>0)
+                reformattedTweet.append(prevWord).append(" ");
+
             String mention = tweet.substring(mentionStart, mentionEnd);
-            reformattedTweet.append(mention);
-            prevEnd = mentionEnd;
+            if(mention.length()>0)
+                reformattedTweet.append(mention).append(" ");
+            prevEnd = mentionEnd+1;
         }
-        reformattedTweet.append(tweet.substring(prevEnd));
+        if(prevEnd<tweet.length())
+            reformattedTweet.append(tweet.substring(prevEnd));
 
         return reformattedTweet.toString().trim();
     }

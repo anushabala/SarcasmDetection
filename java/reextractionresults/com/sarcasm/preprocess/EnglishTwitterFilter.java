@@ -122,7 +122,14 @@ public class EnglishTwitterFilter {
 
                 tweet = StringUtils.stripAccents(tweet);
                 tweet = TextUtility.replaceDoubleQuotes(tweet);
-                tweet = TextUtility.reformatUserMentions(tweet);
+                try {
+                    tweet = TextUtility.reformatUserMentions(tweet);
+                }
+                catch (StringIndexOutOfBoundsException e)
+                {
+                    logger.debug("Mentions in tweet couldn't be reformatted: "+tweet);
+                    continue;
+                }
                 if (!TextUtility.hashesConsistent(tweet, type)) {
 //                    logger.debug("Hashtag type(s) not consistent with the type of the file that the tweet belongs to: "
 //                            +tweet);
