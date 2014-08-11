@@ -171,7 +171,7 @@ public class EnglishTwitterFilter {
                 }
 
                 //If the tweet is a reply to another tweet, ignore it
-                if (TextUtility.isReply(words, true)) {
+                if (TextUtility.isReply(words)) {
 //                    logger.debug("Tweet is a reply to another tweet: "+tweet);
                     continue;
                 }
