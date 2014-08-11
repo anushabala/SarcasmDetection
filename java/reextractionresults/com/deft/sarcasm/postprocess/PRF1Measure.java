@@ -1,9 +1,8 @@
 package com.deft.sarcasm.postprocess;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import org.apache.log4j.Logger;
+
+import java.io.*;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +27,7 @@ public class PRF1Measure {
 	 * the count of target (or correct) items
 	 */
 	private long target;
-
+    private static final Logger logger = Logger.getLogger(PRF1Measure.class);
 	private long truePositive;
 
 	public void setPrecRecallObject(
@@ -189,14 +188,23 @@ public class PRF1Measure {
 	
 	public static void main (String[] args ) throws IOException
 	{
-		
-		String testFilePath = "./data/twitter_corpus/output/svm/tweeter.imbalanced.spanish.testing.sarcnonsarc.07022014.txt.sgml.binary.svm.TESTING.txt" ;
-		String svmOpPath  = "./lib/temp.op" ;
-		
-		PRF1Measure prf1CalcObj = new PRF1Measure();
-		prf1CalcObj.loadFiles(testFilePath, svmOpPath);
-		String op = prf1CalcObj.calculatePRF1();
-		System.out.println(op);
+
+		String testFile = "reextractionresults/release/data/output/temp/test_week_%d.dat.binary.svm.TESTING.txt" ;
+		String svmOp  = "reextractionresults/release/data/output/new_pred/train%dtest%d.op" ;
+		for(int i=1; i<=1; i++)
+        {
+            for(int j=1; j<=6; j++)
+            {
+                String testFilePath = String.format(testFile, j);
+                String svmOpPath = String.format(svmOp, i, j);
+                logger.info("Trained on Week "+i+", Tested on Week "+j+":");
+                PRF1Measure prf1CalcObj = new PRF1Measure();
+                prf1CalcObj.loadFiles(testFilePath, svmOpPath);
+                String op = prf1CalcObj.calculatePRF1();
+                logger.info("\t"+op);
+            }
+        }
+
 	}
 	
 
