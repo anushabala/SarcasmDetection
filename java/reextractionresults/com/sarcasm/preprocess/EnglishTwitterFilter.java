@@ -51,7 +51,7 @@ public class EnglishTwitterFilter {
         if (path.contains("Week_")) {
             week = path.substring(path.indexOf("Week_"));
         }
-        String outPath = OUT_DIR + "/training" + week + ".dat";
+        String outPath = OUT_DIR + "/" + week + ".dat";
         List<String> sarcasticTweets = new ArrayList<String>();
         List<String> sentimentTweets = new ArrayList<String>();
         int otherLangCount = 0;
