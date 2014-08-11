@@ -1,5 +1,6 @@
 package com.classify;
 
+import com.config.ConfigConstants;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
@@ -16,7 +17,6 @@ import static org.junit.Assert.assertEquals;
  */
 public class DatasetSplitter {
     private static Logger logger = Logger.getLogger(DatasetSplitter.class);
-    private static final String PROPERTY_FILE = "com/config/preprocess.properties";
     private Properties properties;
     private double split_ratio;
 
@@ -24,15 +24,15 @@ public class DatasetSplitter {
     {
         split_ratio = 0.8;
         properties = new Properties();
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(PROPERTY_FILE);
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(ConfigConstants.PREPROCESS_PROPERTIES_FILE);
         if(inputStream==null)
         {
-            logger.warn("Couldn't find properties file at "+PROPERTY_FILE);
+            logger.warn("Couldn't find properties file at "+ConfigConstants.PREPROCESS_PROPERTIES_FILE);
         }
         try {
             properties.load(inputStream);
         } catch (IOException e) {
-            logger.warn("Unable to load properties from file at "+PROPERTY_FILE);
+            logger.warn("Unable to load properties from file at "+ConfigConstants.PREPROCESS_PROPERTIES_FILE);
         }
     }
 
