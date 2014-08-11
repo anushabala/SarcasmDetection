@@ -49,7 +49,7 @@ public class EnglishTwitterFilter {
         BufferedReader reader = null;
         String week = "";
         if (path.contains("Week_")) {
-            week = '_' + path.substring(path.indexOf("Week_"));
+            week = path.substring(path.indexOf("Week_"));
         }
         String outPath = OUT_DIR + "/training" + week + ".dat";
         List<String> sarcasticTweets = new ArrayList<String>();
