@@ -226,15 +226,12 @@ public class TextUtility {
      * consistent.
      *
      * @param words            All the tokens in the tweet
-     * @param mentionsReplaced set to true if all the user mentions have already been replaced by ToUser, false otherwise
      * @return true if the tweet is a reply to another tweet, false otherwise.
      */
-    public static boolean isReply(String[] words, boolean mentionsReplaced) {
+    public static boolean isReply(String[] words) {
         // Tweets that are replies usually contain the pattern "@ or "ToUser (depending on whether user mentions in the
         // tweet have been replaced by ToUser or not. If this pattern is found, then the tweet is a reply.
         String search = "\"@";
-        if (!mentionsReplaced)
-            search = "\"@";
         for (String word : words) {
             if (word.trim().contains(search))
                 return true;
