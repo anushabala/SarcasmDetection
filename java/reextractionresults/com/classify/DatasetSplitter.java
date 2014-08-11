@@ -19,6 +19,7 @@ public class DatasetSplitter {
     private static Logger logger = Logger.getLogger(DatasetSplitter.class);
     private Properties properties;
     private double splitRatio;
+    private static final String PROPERTY_FILE = ConfigConstants.PREPROCESS_PROPERTIES_FILE;
 
     public DatasetSplitter()
     {
@@ -44,15 +45,15 @@ public class DatasetSplitter {
     private void init()
     {
         properties = new Properties();
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(ConfigConstants.PREPROCESS_PROPERTIES_FILE);
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(PROPERTY_FILE);
         if(inputStream==null)
         {
-            logger.warn("Couldn't find properties file at "+ConfigConstants.PREPROCESS_PROPERTIES_FILE);
+            logger.warn("Couldn't find properties file at "+PROPERTY_FILE);
         }
         try {
             properties.load(inputStream);
         } catch (IOException e) {
-            logger.warn("Unable to load properties from file at "+ConfigConstants.PREPROCESS_PROPERTIES_FILE);
+            logger.warn("Unable to load properties from file at "+PROPERTY_FILE);
         }
     }
     /**

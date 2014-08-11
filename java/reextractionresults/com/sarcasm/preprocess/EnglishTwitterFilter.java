@@ -21,6 +21,7 @@ public class EnglishTwitterFilter {
             "#excited", "#fear", "#frustrated", "#grateful", "#happy", "#hate",
             "#joy", "#loved", "#love", "#lucky", "#sad", "#scared", "#stressed",
             "#wonderful", "#positive", "#positivity", "#disappointed"};
+    private static final String PROPERTY_FILE = ConfigConstants.PREPROCESS_PROPERTIES_FILE;
     public String OUT_DIR;
     public Properties properties;
 
@@ -28,14 +29,14 @@ public class EnglishTwitterFilter {
 
     public EnglishTwitterFilter() throws LangDetectException {
         DetectorFactory.loadProfile(LANG_DETECTOR_PROFILE);
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(ConfigConstants.PREPROCESS_PROPERTIES_FILE);
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(PROPERTY_FILE);
         properties = new Properties();
         if (inputStream==null)
-            logger.warn("Property file at "+ ConfigConstants.PREPROCESS_PROPERTIES_FILE +" not found.");
+            logger.warn("Property file at "+ PROPERTY_FILE +" not found.");
         try {
             properties.load(inputStream);
         } catch (IOException e) {
-            logger.warn("Unable to load properties file at "+ConfigConstants.PREPROCESS_PROPERTIES_FILE);
+            logger.warn("Unable to load properties file at "+PROPERTY_FILE);
         }
         OUT_DIR = properties.getProperty("FILTERED_DATA_DIR");
     }
