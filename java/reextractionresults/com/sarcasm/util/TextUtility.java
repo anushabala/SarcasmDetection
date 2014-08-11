@@ -6,8 +6,11 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TextUtility {
+
     private static Logger logger = Logger.getLogger(TextUtility.class);
     private static String[] positives = {"#excited", "#grateful", "#happy", "#joy", "#loved", "#love", "#lucky",
             "#wonderful", "#positive", "#positivity"};
@@ -15,13 +18,13 @@ public class TextUtility {
             "#sad", "#scared", "#stressed", "#disappointed"};
     private static String[] sarcasm = {"#sarcasm", "#sarcastic"};
     private static String[] random = {"#random"};
-
+    private static Pattern userMention = Pattern.compile("[^ \t“\"A-Za-z]@[a-zA-Z0-9]");
+    private static Matcher userMentionMatcher = null;
     private enum Markers {
         rt, HTTP, HTTPS
     }
 
     public static int countChars(String line, char c) {
-        // TODO Auto-generated method stub
         int count = 0;
         char[] chars = line.toCharArray();
 
@@ -56,7 +59,6 @@ public class TextUtility {
     }
 
     public static Boolean checkURL(String[] words) {
-        // TODO Auto-generated method stub
         int index = 0;
         int urlIndex = Integer.MAX_VALUE;
 
@@ -81,7 +83,6 @@ public class TextUtility {
     }
 
     public static String checkRT(String[] words) {
-        // TODO Auto-generated method stub
         StringBuffer ret = new StringBuffer();
 
         for (String word : words) {
@@ -108,7 +109,6 @@ public class TextUtility {
 
 
     public static Boolean hashFilter(String[] words, List<String> hashes) {
-        // TODO Auto-generated method stub
         for (String word : words) {
             for (String hash : hashes) {
                 if (word.contains(hash)) {
@@ -120,7 +120,6 @@ public class TextUtility {
     }
 
     public static Boolean hashFilter(String[] words, String hash) {
-        // TODO Auto-generated method stub
         for (String word : words) {
             if (word.contains(hash)) {
                 return true;
@@ -131,7 +130,6 @@ public class TextUtility {
     }
 
     public static Boolean checkHashPosition(String[] words, List<String> hashes) {
-        // TODO Auto-generated method stub
         int index = 0;
         int hashIndex = Integer.MAX_VALUE;
         for (String word : words) {
@@ -157,7 +155,6 @@ public class TextUtility {
     }
 
     public static String removeHashes(String tweets, List<String> hashes) {
-        // TODO Auto-generated method stub
         for (String hash : hashes) {
             tweets = tweets.replace(hash, "");
         }
@@ -166,13 +163,11 @@ public class TextUtility {
     }
 
     public static String removeHashes(String tweets, String hash) {
-        // TODO Auto-generated method stub
         tweets = tweets.replace(hash, "");
         return tweets;
     }
 
     public static String getMessageType(String hash) {
-        // TODO Auto-generated method stub
 
         List<String> posHashes = new ArrayList<String>(Arrays.asList(positives));
         List<String> negHashes = new ArrayList<String>(Arrays.asList(negatives));
@@ -193,7 +188,6 @@ public class TextUtility {
     }
 
     public static boolean checkURLUser(String[] tokens) {
-        // TODO Auto-generated method stub
 
         for (String word : tokens) {
             if (!(word.contains("ToUser")) || (word.contains("URL"))) {
@@ -205,7 +199,6 @@ public class TextUtility {
     }
 
     public static boolean checkAlphaNumeric(String rTRemoved) {
-        // TODO Auto-generated method stub
         char[] chars = rTRemoved.toCharArray();
         for (char c : chars) {
             if (Character.isAlphabetic(c)) {
@@ -219,7 +212,6 @@ public class TextUtility {
     }
 
     public static boolean checkHashPresence(String tweet, List<String> hashes) {
-        // TODO Auto-generated method stub
         for (String hash : hashes) {
             if (tweet.contains(hash)) {
                 return true;
@@ -301,6 +293,39 @@ public class TextUtility {
     public static boolean isTweetTruncated(String tweet) {
         tweet = tweet.trim();
         return StringUtils.endsWith(tweet, "…");
+    }
+
+    /**
+     * Finds any user mentions that are embedded within (or joined with) other words in a tweet, and separates them so
+     * that user mention detection is effective. For example, if a user mention occurs as the token "&@someusername",
+     * the method separates the string into two tokens, yielding "& @someusername".
+     * Note: This method only finds user mentions that are preceded by special characters, not those that are preceded by letters. This is done to avoid flagging other uses of @ as user mentions (e.g. email addresses).
+     * @param tweet the tweet for which user mentions need to be reformatted
+     * @return The reformatted tweet
+     */
+    public static String reformatUserMentions(String tweet)
+    {
+        StringBuilder reformattedTweet = new StringBuilder();
+        tweet = tweet.trim()+' ';
+        int prevEnd = 0;
+        if(userMentionMatcher==null)
+            userMentionMatcher = userMention.matcher(tweet);
+        else
+            userMentionMatcher.reset(tweet);
+        while (userMentionMatcher.find())
+        {
+            int start = userMentionMatcher.start();
+            int mentionStart = start+1;
+            int mentionEnd = tweet.indexOf(' ',userMentionMatcher.end())+1;
+            String prevWord = tweet.substring(prevEnd, start+1);
+            reformattedTweet.append(prevWord+" ");
+            String mention = tweet.substring(mentionStart, mentionEnd);
+            reformattedTweet.append(mention);
+            prevEnd = mentionEnd;
+        }
+        reformattedTweet.append(tweet.substring(prevEnd));
+
+        return reformattedTweet.toString().trim();
     }
 
 }
