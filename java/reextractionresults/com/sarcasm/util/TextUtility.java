@@ -315,7 +315,7 @@ public class TextUtility {
             int mentionStart = start+1;
             int mentionEnd = tweet.indexOf(' ',userMentionMatcher.end())+1;
             String prevWord = tweet.substring(prevEnd, start+1);
-            reformattedTweet.append(prevWord+" ");
+            reformattedTweet.append(prevWord).append(" ");
             String mention = tweet.substring(mentionStart, mentionEnd);
             reformattedTweet.append(mention);
             prevEnd = mentionEnd;
