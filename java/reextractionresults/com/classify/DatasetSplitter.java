@@ -18,11 +18,31 @@ import static org.junit.Assert.assertEquals;
 public class DatasetSplitter {
     private static Logger logger = Logger.getLogger(DatasetSplitter.class);
     private Properties properties;
-    private double split_ratio;
+    private double splitRatio;
 
     public DatasetSplitter()
     {
-        split_ratio = 0.8;
+        splitRatio = 0.8;
+        init();
+    }
+
+    /**
+     *
+     * @param splitRatio The percentage of the dataset to be used as training data, where 0 <= splitRatio <= 1
+     *                   If the value of splitRatio is outside this range, a warning is displayed and the default value
+     *                   of 0.8 is used.
+     */
+    public DatasetSplitter(double splitRatio)
+    {
+        if(splitRatio<0 || splitRatio>1)
+            this.splitRatio = 0.8;
+        else
+            this.splitRatio = splitRatio;
+        init();
+    }
+
+    private void init()
+    {
         properties = new Properties();
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream(ConfigConstants.PREPROCESS_PROPERTIES_FILE);
         if(inputStream==null)
@@ -35,12 +55,6 @@ public class DatasetSplitter {
             logger.warn("Unable to load properties from file at "+ConfigConstants.PREPROCESS_PROPERTIES_FILE);
         }
     }
-
-    public DatasetSplitter(double split_ratio)
-    {
-        this.split_ratio = split_ratio;
-    }
-
     /**
      * Randomly splits the data into training and testing data based on the split ratio.
      * @param filteredDataFile Path of file containing filtered Twitter data.
@@ -61,7 +75,7 @@ public class DatasetSplitter {
                 String tweet = fileReader.nextLine().trim();
                 totalTweets++;
                 double p = Math.random();
-                if(p>=0.2) {
+                if(p>=(1- splitRatio)) {
                     trainWriter.write(tweet+"\n");
                     training++;
                 }
@@ -92,8 +106,8 @@ public class DatasetSplitter {
     private void testSplitAccuracy(int totalTweets, int trainTweets, int testTweets)
     {
         assertEquals(trainTweets+testTweets, totalTweets);
-        assertEquals(0.8, (double)trainTweets/totalTweets, 0.05);
-        assertEquals(0.2, (double)testTweets/totalTweets, 0.05);
+        assertEquals(splitRatio, (double)trainTweets/totalTweets, 0.05);
+        assertEquals(1-splitRatio, (double)testTweets/totalTweets, 0.05);
 
     }
     public String getProperty(String name)
