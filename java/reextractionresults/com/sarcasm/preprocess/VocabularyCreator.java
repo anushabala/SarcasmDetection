@@ -13,6 +13,8 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.lang.System.exit;
+
 /**
  * @author Anusha Balakrishnan
  *         Date: 8/11/14
@@ -50,8 +52,12 @@ public class VocabularyCreator {
      * @param namePattern (String) Describes the pattern of the filenames for the training files to be read from. If not null,
      *                    vocabulary will only be extracted from files with filenames that match this pattern.
      *                    namePattern can be either a simple string or a regular expression.
+     * @param write boolean parameter indicating whether the vocabulary should be written to the default vocabulary file
+     *              or not. If true, the vocabulary created from the files in trainingDir is written to the vocabulary
+     *              file specified by the path VOCABULARY_FILE in the properties file at
+     *              ConfigConstants.PROCESS_PROPERTIES_FILE. If false, the vocabulary is written to standard output.
      */
-    public void createVocabulary(String trainingDir, String namePattern)
+    public void createVocabulary(String trainingDir, String namePattern, boolean write)
     {
         StrTokenizer tokenizer = new StrTokenizer();
         File dir = new File(trainingDir);
@@ -63,13 +69,21 @@ public class VocabularyCreator {
         TrainingFileFilter filter = new TrainingFileFilter(namePattern);
         for(File current: dir.listFiles(filter))
         {
+            logger.debug("Updating vocabulary using tokens in "+current.getName());
             try {
                 Scanner fileReader = new Scanner(new InputStreamReader(new FileInputStream(current), "UTF-8"));
                 while(fileReader.hasNextLine())
                 {
-                    String line = fileReader.nextLine();
+                    String line = fileReader.nextLine().trim();
                     String[] fields = line.split("\t");
-                    String tweet = fields[2];
+                    String tweet;
+                    try {
+                        tweet = fields[2];
+                    }
+                    catch (ArrayIndexOutOfBoundsException ai)
+                    {
+                        tweet = line.trim();
+                    }
                     tokenizer.reset(tweet);
                     String[] tokens = tokenizer.getTokenArray();
                     for(String token: tokens)
@@ -83,6 +97,7 @@ public class VocabularyCreator {
                         }
                     }
                 }
+                fileReader.close();
 
             } catch (FileNotFoundException e) {
                 logger.warn("Could not find file at "+current.getAbsolutePath()+". Skipping file.");
@@ -91,8 +106,40 @@ public class VocabularyCreator {
                         "Skipping file.");
             }
         }
+
+        if(write) {
+            String vocabFile = getProperty("VOCABULARY_FILE");
+            try {
+                writeVocabulary(vocabFile);
+                logger.info("Wrote tokens and frequencies from vocabulary to vocabulary file at "+vocabFile+". To change" +
+                        " the write path, change the VOCABULARY_FILE property as needed in preprocess.properties.");
+            } catch (FileNotFoundException e) {
+                logger.warn("Could not find directory for vocabulary file at " + vocabFile);
+            } catch (IOException e) {
+                logger.warn("Error when writing to vocabulary file ("+vocabFile+")");
+            }
+        }
+        else {
+            displayVocabulary();
+        }
     }
 
+    private void displayVocabulary()
+    {
+        for(String key: vocabulary.keySet())
+        {
+            System.out.println(key+"\t"+vocabulary.get(key));
+        }
+    }
+    private void writeVocabulary(String path) throws IOException {
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path)));
+        for(String key: vocabulary.keySet())
+        {
+            writer.write(key+"\t"+vocabulary.get(key));
+            writer.newLine();
+        }
+        writer.close();
+    }
 
     public String getProperty(String name)
     {
@@ -101,7 +148,7 @@ public class VocabularyCreator {
 
     public static void main(String[] args) {
         VocabularyCreator creator = new VocabularyCreator();
-        creator.createVocabulary(creator.getProperty("TRAINING_DATA_DIR"), "train_week");
+        creator.createVocabulary(creator.getProperty("TRAINING_DATA_DIR"), "train_week_", true);
     }
 }
 
