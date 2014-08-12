@@ -333,4 +333,15 @@ public class TextUtility {
         return reformattedTweet.toString().trim();
     }
 
+    /**
+     * Strips all punctuation (non-alphanumeric characters) from a word and returns the word.
+     * @param word The word to be modified
+     * @return The word, stripped of all punctuation
+     */
+    public static String stripPunctuation(String word)
+    {
+        word = word.replaceAll("[^a-zA-Z0-9]", "");
+        return word;
+    }
+
 }
