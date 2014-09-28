@@ -41,7 +41,7 @@ public class EnglishTwitterFilter {
         OUT_DIR = properties.getProperty("FILTERED_DATA_DIR");
     }
 
-    public void loadFileForFiltering(String path) throws IOException, LangDetectException {
+    public void loadFileForFiltering(String path, int SET_SIZE) throws IOException, LangDetectException {
         File f = new File(path);
 
         File[] files = f.listFiles();
@@ -80,10 +80,7 @@ public class EnglishTwitterFilter {
             Modify the type of the tweet so that the only differentiation is between sarcasm (1) and sentiment (2). By
             default, the getMessageType() method returns 1,2, or 3 for sarcasm, positive, and negative type respectively.
              */
-            String modifiedType = type;
-            if (type.equals("3"))
-                modifiedType = "2";
-            //pass this hash to retrieve the list of hashes for the type
+
             List<String> hashes = collectHashes();
 
             Set<String> filteredSet = new HashSet<String>();
@@ -127,7 +124,7 @@ public class EnglishTwitterFilter {
                 }
                 catch (StringIndexOutOfBoundsException e)
                 {
-                    logger.debug("Mentions in tweet couldn't be reformatted: "+tweet);
+//                    logger.debug("Mentions in tweet couldn't be reformatted: "+tweet);
                     continue;
                 }
                 if (!TextUtility.hashesConsistent(tweet, type)) {
@@ -205,7 +202,7 @@ public class EnglishTwitterFilter {
                     continue;
                 }
 
-                filteredSet.add(modifiedType + "\t" + id + "\t" + RTRemoved);
+                filteredSet.add(type + "\t" + hash + "\t" + RTRemoved);
 
             }
 
@@ -220,15 +217,82 @@ public class EnglishTwitterFilter {
                 case 2:
                     sentimentTweets.addAll(filteredList);
                     break;
+                case 3:
+                    sentimentTweets.addAll(filteredList);
             }
 
             reader.close();
 
             //		writeTheRemoved(removedList);
         }
-        List<String> dataset = createBalancedSet(sarcasticTweets, sentimentTweets);
-        logger.info("Number of tweets in another language: "+otherLangCount);
+        logger.info("Number of tweets in another language: " + otherLangCount);
+        List<String> dataset;
+        if(SET_SIZE<0) {
+            dataset = createBalancedSet(sarcasticTweets, sentimentTweets);
+        }
+        else {
+            dataset = createBalancedSet(sarcasticTweets, sentimentTweets, SET_SIZE);
+        }
+        dataset = convertToBinaryClasses(dataset);
         writeData(outPath, dataset);
+    }
+
+    private List<String> convertToBinaryClasses(List<String> dataset) {
+        ArrayList<String> convertedSet = new ArrayList<String>();
+        for(String tweet: dataset)
+        {
+            if(tweet.charAt(0)=='3')
+                convertedSet.add("2"+tweet.substring(1));
+            else
+                convertedSet.add(tweet);
+        }
+        return convertedSet;
+    }
+
+    private List<String> createBalancedSet(List<String> sarcasticTweets, List<String> sentimentTweets, int SET_SIZE) {
+
+        ArrayList<String> dataset = new ArrayList<String>();
+        if(sarcasticTweets.size()<(SET_SIZE/2) || sentimentTweets.size() < (SET_SIZE/2))
+            return createBalancedSet(sarcasticTweets, sentimentTweets);
+        Random gen = new Random();
+        int tweetsPerClass = SET_SIZE/2;
+        int sarcasticNum = 0;
+
+        Collections.shuffle(sentimentTweets);
+        Collections.shuffle(sarcasticTweets);
+        // add random SET_SIZE/2 sarcastic tweets
+        while(sarcasticNum<tweetsPerClass)
+        {
+            int position = gen.nextInt(sarcasticTweets.size()-sarcasticNum) + sarcasticNum;
+            dataset.add(sarcasticTweets.get(position));
+            Collections.swap(sarcasticTweets, sarcasticNum, position);
+            sarcasticNum++;
+        }
+
+        int posTweets = 0, negTweets = 0, sentimentNum = 0;
+        while (sentimentNum<tweetsPerClass)
+        {
+            int position = gen.nextInt(sentimentTweets.size()-sentimentNum) + sentimentNum;
+            String tweet = sentimentTweets.get(position);
+            if(tweet.charAt(0)=='2' && posTweets<tweetsPerClass/2)
+            {
+                Collections.swap(sentimentTweets, sentimentNum, position);
+                posTweets++;
+                sentimentNum++;
+                dataset.add(tweet);
+            }
+            else if(tweet.charAt(0)=='3' && negTweets<tweetsPerClass/2)
+            {
+                Collections.swap(sentimentTweets, sentimentNum, position);
+                negTweets++;
+                sentimentNum++;
+                dataset.add(tweet);
+            }
+        }
+
+        Collections.shuffle(dataset);
+        logger.info("Balanced dataset size: "+dataset.size());
+        return dataset;
     }
 
     private List<String> createBalancedSet(List<String> sarcasticTweets, List<String> sentimentTweets) {
@@ -252,9 +316,9 @@ public class EnglishTwitterFilter {
         Random selector = new Random();
         int added = 0;
         while (added < BALANCED_SIZE) {
-            int pos = selector.nextInt(BALANCED_SIZE - added);
-            dataset.add(biggerList.get(pos + added));
-            Collections.swap(biggerList, pos + added, added);
+            int selected = selector.nextInt(BALANCED_SIZE - added);
+            dataset.add(biggerList.get(selected + added));
+            Collections.swap(biggerList, selected + added, added);
             added++;
         }
 
@@ -496,7 +560,7 @@ public class EnglishTwitterFilter {
         for (int i = start_week; i <= end_week; i++) {
             String week_path = path + Integer.toString(i);
             logger.info(week_path);
-            twitterObj.loadFileForFiltering(week_path);
+            twitterObj.loadFileForFiltering(week_path, 29000);
         }
 
     }
