@@ -135,7 +135,7 @@ public class DatasetSplitter {
         int start_week = Integer.parseInt(args[0]);
         int end_week = Integer.parseInt(args[1]);
 
-        DatasetSplitter splitter = new DatasetSplitter();
+        DatasetSplitter splitter = new DatasetSplitter(0.963);
 
         String week = "Week_%d.dat";
         for(int i=start_week; i<=end_week; i++)

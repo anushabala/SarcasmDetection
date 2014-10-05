@@ -60,12 +60,17 @@ public class PRF1Measure {
 				refPairList = eachCategoryMap.get(c);
 				updateSelected(refPairList, category);
 			}
+            String out="";
+//			 out = "category:" + " " + category + " " + "precision:" + " " + dec.format(precision()) + " " + "recall:"
+//					+ " " + dec.format(recall()) + " " +"FMeasure:" + " " + dec.format(FMeasure());
+            if(category==1.0) {
+                out = dec.format(FMeasure());
+                sb.append(out);
+//                sb.append("\n");
+            }
+//            sb.append(out);
+//            sb.append("\n");
 
-			String out = "category:" + " " + category + " " + "precision:" + " " + dec.format(precision()) + " " + "recall:"
-					+ " " + dec.format(recall()) + " " +"FMeasure:" + " " + dec.format(FMeasure());
-			sb.append(out) ;
-			sb.append("\n") ;
-	
 			selected = 0 ;
 		}
 		
@@ -186,22 +191,22 @@ public class PRF1Measure {
 		
 	}
 	
-	public static void main (String[] args ) throws IOException
+	public static void main (String[] args) throws IOException
 	{
 
-		String testFile = "reextractionresults/release/data/output/temp/test_week_%d.dat.binary.svm.TESTING.txt" ;
-		String svmOp  = "reextractionresults/release/data/output/new_pred/train%dtest%d.op" ;
-		for(int i=1; i<=1; i++)
+		String testFile = "reextractionresults/release/data/output/svm/test_week_%d.dat.binary.svm.TESTING.txt" ;
+		String svmOp  = "reextractionresults/release/data/output/predictions/train%dtest%d.op" ;
+		for(int i=1; i<=17; i++)
         {
-            for(int j=1; j<=6; j++)
+            System.out.println("Trained on week "+i);
+            for(int j=1; j<=17; j++)
             {
                 String testFilePath = String.format(testFile, j);
                 String svmOpPath = String.format(svmOp, i, j);
-                logger.info("Trained on Week "+i+", Tested on Week "+j+":");
                 PRF1Measure prf1CalcObj = new PRF1Measure();
                 prf1CalcObj.loadFiles(testFilePath, svmOpPath);
                 String op = prf1CalcObj.calculatePRF1();
-                logger.info("\t"+op);
+                System.out.println("Week "+j+"\t"+op);
             }
         }
 
