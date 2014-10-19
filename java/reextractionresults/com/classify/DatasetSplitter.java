@@ -19,6 +19,7 @@ public class DatasetSplitter {
     private static Logger logger = Logger.getLogger(DatasetSplitter.class);
     private Properties properties;
     private double splitRatio;
+    private int trainNum, testNum;
     private static final String PROPERTY_FILE = ConfigConstants.PREPROCESS_PROPERTIES_FILE;
 
     public DatasetSplitter()
@@ -42,6 +43,13 @@ public class DatasetSplitter {
         init();
     }
 
+    public DatasetSplitter(int train, int test)
+    {
+        this.splitRatio = (double)train/(train+test);
+        this.trainNum = train;
+        this.testNum = test;
+        init();
+    }
     private void init()
     {
         properties = new Properties();
@@ -77,16 +85,29 @@ public class DatasetSplitter {
                 totalTweets++;
                 double p = Math.random();
                 if(p>=(1- splitRatio)) {
-                    trainWriter.write(tweet+"\n");
-                    training++;
+                    if(training< trainNum) {
+                        trainWriter.write(tweet + "\n");
+                        training++;
+                    }
+                    else {
+                        testWriter.write(tweet+"\n");
+                        test++;
+                    }
                 }
                 else {
-                    testWriter.write(tweet+"\n");
-                    test++;
+                    if(test<testNum) {
+                        testWriter.write(tweet + "\n");
+                        test++;
+                    }
+                    else {
+                        trainWriter.write(tweet + "\n");
+                        training++;
+                    }
                 }
             }
 
             testSplitAccuracy(totalTweets, training, test);
+
             logger.info("Correctly split data for "+filteredDataFile);
 
             fileReader.close();
@@ -119,8 +140,8 @@ public class DatasetSplitter {
     /**
      *
      * @param args Two command-line arguments that numerically specify the first week and the last week of the
-     *             data to be split into train/test. e.g. Providing command line arguments 1 18 will create training and
-     *             test sets for weeks 1 through 18, inclusive.
+     *             data to be split into trainNum/testNum. e.g. Providing command line arguments 1 18 will create training and
+     *             testNum sets for weeks 1 through 18, inclusive.
      */
     public static void main(String[] args) {
         if(args.length!=2)
@@ -129,13 +150,13 @@ public class DatasetSplitter {
                     "first_week: The number of the first week of the data.\n" +
                     "second_week: The number of the last week of the data.\n" +
                     "Example: java DatasetSplitter 1 18\n" +
-                    "\tCreates training and test sets for all weeks between 1 and 18, inclusive.");
+                    "\tCreates training and testNum sets for all weeks between 1 and 18, inclusive.");
         }
 
         int start_week = Integer.parseInt(args[0]);
         int end_week = Integer.parseInt(args[1]);
 
-        DatasetSplitter splitter = new DatasetSplitter(0.963);
+        DatasetSplitter splitter = new DatasetSplitter(21200, 1800);
 
         String week = "Week_%d.dat";
         for(int i=start_week; i<=end_week; i++)

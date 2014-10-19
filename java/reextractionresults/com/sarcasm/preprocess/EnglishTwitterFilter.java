@@ -127,6 +127,8 @@ public class EnglishTwitterFilter {
 //                    logger.debug("Mentions in tweet couldn't be reformatted: "+tweet);
                     continue;
                 }
+                if(!StringUtils.isAsciiPrintable(tweet))
+                    continue;
                 if (!TextUtility.hashesConsistent(tweet, type)) {
 //                    logger.debug("Hashtag type(s) not consistent with the type of the file that the tweet belongs to: "
 //                            +tweet);
@@ -252,8 +254,10 @@ public class EnglishTwitterFilter {
     private List<String> createBalancedSet(List<String> sarcasticTweets, List<String> sentimentTweets, int SET_SIZE) {
 
         ArrayList<String> dataset = new ArrayList<String>();
-        if(sarcasticTweets.size()<(SET_SIZE/2) || sentimentTweets.size() < (SET_SIZE/2))
-            return createBalancedSet(sarcasticTweets, sentimentTweets);
+        if(sarcasticTweets.size()<(SET_SIZE/2))
+            return createBalancedSet(sarcasticTweets, sentimentTweets, sarcasticTweets.size()*2);
+        else if(sentimentTweets.size() < (SET_SIZE/2))
+            return createBalancedSet(sarcasticTweets, sentimentTweets, sentimentTweets.size()*2);
         Random gen = new Random();
         int tweetsPerClass = SET_SIZE/2;
         int sarcasticNum = 0;
@@ -268,7 +272,6 @@ public class EnglishTwitterFilter {
             Collections.swap(sarcasticTweets, sarcasticNum, position);
             sarcasticNum++;
         }
-
         int posTweets = 0, negTweets = 0, sentimentNum = 0;
         while (sentimentNum<tweetsPerClass)
         {
@@ -289,7 +292,6 @@ public class EnglishTwitterFilter {
                 dataset.add(tweet);
             }
         }
-
         Collections.shuffle(dataset);
         logger.info("Balanced dataset size: "+dataset.size());
         return dataset;
@@ -313,15 +315,28 @@ public class EnglishTwitterFilter {
         dataset.addAll(smallerList);
 
         final int BALANCED_SIZE = smallerList.size();
-        Random selector = new Random();
-        int added = 0;
-        while (added < BALANCED_SIZE) {
-            int selected = selector.nextInt(BALANCED_SIZE - added);
-            dataset.add(biggerList.get(selected + added));
-            Collections.swap(biggerList, selected + added, added);
-            added++;
+        Random gen = new Random();
+        int posTweets = 0, negTweets = 0, sentimentNum = 0;
+        while (sentimentNum<BALANCED_SIZE)
+        {
+            int position = gen.nextInt(biggerList.size()-sentimentNum) + sentimentNum;
+            String tweet = biggerList.get(position);
+            if(tweet.charAt(0)=='2' && posTweets<BALANCED_SIZE/2)
+            {
+                Collections.swap(biggerList, sentimentNum, position);
+                posTweets++;
+                sentimentNum++;
+                dataset.add(tweet);
+            }
+            else if(tweet.charAt(0)=='3' && negTweets<BALANCED_SIZE/2)
+            {
+                Collections.swap(biggerList, sentimentNum, position);
+                negTweets++;
+                sentimentNum++;
+                dataset.add(tweet);
+            }
         }
-
+        logger.info("Balanced dataset size: "+dataset.size());
         Collections.shuffle(dataset);
         return dataset;
     }
@@ -560,8 +575,9 @@ public class EnglishTwitterFilter {
         for (int i = start_week; i <= end_week; i++) {
             String week_path = path + Integer.toString(i);
             logger.info(week_path);
-            twitterObj.loadFileForFiltering(week_path, 29000);
+            twitterObj.loadFileForFiltering(week_path, 23000);
         }
+
 
     }
 
